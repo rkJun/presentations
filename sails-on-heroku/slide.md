@@ -1,5 +1,5 @@
 # Sails on Heroku
-### 간편 메모웹 만들기
+### Heroku 와 Sails 살펴보기
 
 2014.07.29 / [@rkjun](http://twitter.com/rkjun)
 
@@ -14,10 +14,8 @@ Note:
   <small>ruby on rails 에서 영감을 얻은 Node framework</small>
 _ _ _
 ## 오늘 이야기하지 않는 것
-- git 사용법
-- nodejs 사용법
-- 지속적인 통합 (CI Tool) 적용하기  
-등은 다루지 않음.
+- git 사용법 (필요한 부분만.. 최소)
+- nodejs 사용법 (필요한 부분만.. 최소)
 _ _ _
 - PaaS(Platform as a Service)  
   SaaS의 개념을 개발 플랫폼에도 확장한 방식으로, ***개발을 위한 플랫폼 구축을 할 필요 없이 필요한 개발 요소들을 웹에서 쉽게 빌려쓸 수 있게 하는 모델*** - [위키백과](http://ko.wikipedia.org/wiki/PaaS)
@@ -366,13 +364,50 @@ io.on('connection', function(socket){
 ```
 - - - 
 ## Sails.js
-- REST Blueprints
-- Automatically generated JSON API for manipulating models  
 - 기본 CRUD 는 백엔드 코드 불필요
+   - Automatically generated JSON API  
+   - Automatic route bindings
+- +Grunt (Java의 mvn/ant, Ruby의 rake)
+_ _ _
+## Models
+- Waterline
+   - https://www.npmjs.org/package/waterline
+   - ORM (Object Relational Mapping)
+   - for mysql, mongo, postgres, redis..
+_ _ _
+## Controllers
+- Contorller's method
+   - http://localhost:1337/:controller/:method
+- REST
+   - get /:controller/:id?
+   - post /:controller
+   - put /:controller/:id
+   - delete /:controller/:id
+- Shortcut CRUD
+   - /:controller/find/:id?
+   - /:controller/create
+   - /:controller/update/:id
+   - /:controller/destroy/:id
+_ _ _
+## Views
+- ejs
+```HTML
+<div>
+  <h1>My first view</h1>
 
-(You don't have to write any backend code to build simple CRUD apps)
-- Automatic route bindings for your controller actions
-
+  <h2>My corndog collection:</h2>
+  <ul>
+    <% _.each(corndogs, function (corndog) { %>
+    <li><%= corndog.name %></li>
+    <% }) %>
+  </ul>
+</div>
+```
+- config/views.js
+```javascript
+  // ejs, jade, handlebars...
+  engine: 'ejs',
+```
 - - -
 ## Sails.js
 ### sails 시작하기
@@ -400,23 +435,166 @@ testProject $ sails lift
 default home page
 http://localhost:1337/
 - - - 
-## Sails.js
-### sails 살펴보기
-- - -
-- 
+## Sails on Heroku
+간단한 메모웹앱 만들어보기
+_ _ _
+## Application 생성하기
+- simple-memo-webapp 생성하기
+```SHELL
+$ sails new simple-memo-webapp
+info: Created a new Sails app `simple-memo-webapp`!
+```
+```SHELL
+$ cd simple-memo-webapp && tree
+├── api
+│   ├── controllers
+│   ├── models
+├── assets
+├── config
+│   └── ...
+├── node_modules (ejs, grunt, sails, sails-disk..)
+├── tasks
+└── views (ejs)
+```
+- 기본 경로 및 기본 파일은 자동으로 생성됨.
+- api : backend api (models, controllers)
+- assets : client
+- views
+_ _ _
+## API 생성하기
+- Model and Controller 생성하기  
 
+```SHELL
+$ sails generate api Memo
 
-- - -
-## simple memo web app
-npm install mongodb --save
+info: Created a new model ("Memo") at api/models/Memo.js!
+info: Created a new controller ("Memo") at api/controllers/MemoController.js!
 
-- - -
-## 번외) Jenkins on Heroku
-## 번외) Wordpress on Heroku
-- - -
+info: REST API generated @ http://localhost:1337/Memo
+info: and will be available the next time you run `sails lift`.
+```
+_ _ _
+## Model 수정
+- memo 항목과 writer 추가
+```javascript
+module.exports = {
+    attributes: {
+      // memo 항목
+      memo: {
+        type: 'string'
+      },
+      // writeName 은 필수
+      writerName: {
+        type: 'string',
+        required: true
+      }
+    }
+};
+```
+_ _ _
+## View 생성하기
+- 자동 바인딩을 위해서 views/ 동일한 이름으로 생성   
+- views/layout.ejs 속으로···.
+
+```SHELL
+$ cd views && mkdir Memo
+
+// 파일생성
+$ echo Hello World >> index.ejs
+```
+_ _ _
+## bootstrap, jquery 가져오기
+- CSS, JS 다운로드
+```SHELL
+$ cd assets/styles
+$ curl -O http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.css
+$ curl -O http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.css
+...
+$ cd assets/js
+$ curl -O http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.js
+$ cd assets/js/dependencies
+$ curl -O http://code.jquery.com/jquery-2.1.1.js
+```
+- sails lift 시, 자동 include (by grunt)
+- sails lift --prod 모드에서 minify (by grunt)
+_ _ _
+## 메모 작성기능 추가 (ejs)
+- /Views/Memo/index.ejs 수정하기
+- writerName 필드와 memo 필드를 추가.
+
+```HTML
+...
+<input type="text" class="form-control col-md-2" id="writerName" name="writerName" placeholder="작성자명">
+...
+<input type="text" class="form-control" id="memo" name="memo" placeholder="메모남기기..">
+```
+_ _ _
+## 메모 작성기능 추가 (js)
+- assets/js/memo.js 추가하기
+- submit 시 POST 로 전달 
+
+```javascript
+$(document).ready(function() {
+
+  var $form = $("#form");
+
+  $form.submit(function(e) {
+    e.preventDefault();
+
+    var reqData = $form.serialize();
+    $.ajax({
+      type: "POST",
+      url: "/memo",
+      data: reqData
+    }).done(function( resultJson ) {
+    });
+
+  });
+});
+```
+_ _ _
+## 메모 조회 (ejs)
+- memos 를 받아서 각각 필드 조회  
+```HTML
+      <ul id="list">
+        <% _.each(memos, function (memo) { %>
+        <li><%= memo.writerName %> : <%= memo.memo %> : <%= memo.updatedAt %></li>
+        <% }) %>     
+      </ul>
+```
+_ _ _
+## 메모 조회 (controller)
+- find method override (defualt json)
+```javascript
+  find: function(req, res) {
+
+    Memo.find()
+    .limit(100)
+    .sort('updatedAt')
+    .exec(function(err, memos) {
+      return res.view('Memo/index', {memos:memos});
+    });
+  }
+```
+- - - 
+## Data Storage 변경
+- default - localDiskDb (sails-disk)
+- sails-mongo 설치하기
+```SHELL
+$ npm install sails-mongo --save
+```
+- sails v0.10.0
+   - config/connections.js
+   - config/models.js
+- sails v0.9.x
+   - config/adapters.js
+_ _ _
+
 ## 결론
 - 부숴도 좋은 장난감 만들기
 - git 배우기
+- ruby on rails, coffee script
+
 - - -
 ## 참고
 * [Heroku Dev Center](https://devcenter.heroku.com/)
