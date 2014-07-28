@@ -150,13 +150,13 @@ $ git push heroku your_branch:master
 3. Procfile 정의 (최초 1번)
 4. ```foreman start``` *for Local Test*
 6. git init . (최초 1번)
-7. git add . && commit
+7. git add . && git commit
 8. ```heroku create``` (최초 1번)
 9. git push heroku master *for deploy*
 - - -
 ## Heroku 사용하기(반복)
 1. 코딩/테스트
-2. git add . && commit
+2. git add . && git commit
 3. git push heroku master *for deploy*
 - - -
 ## After Deploy
@@ -178,7 +178,7 @@ $ heroku open
 ```
 - - -
 ## Dyno sleeping and scaling
-- 확장하기 (2X Dyno - 1024MB/2x CPU 시간당 $.10)
+- 확장하기 (2X Dyno - 1024MB/2x CPU시간당 $0.10)
 ```SHELL
 $ heroku ps:scale web=2
 ```
@@ -483,7 +483,7 @@ module.exports = {
       memo: {
         type: 'string'
       },
-      // writeName 은 필수
+      // writerName 은 필수
       writerName: {
         type: 'string',
         required: true
@@ -519,7 +519,7 @@ $ curl -O http://code.jquery.com/jquery-2.1.1.js
 - sails lift --prod 모드에서 minify (by grunt)
 _ _ _
 ## 메모 작성기능 추가 (ejs)
-- /Views/Memo/index.ejs 수정하기
+- /views/Memo/index.ejs 수정하기
 - writerName 필드와 memo 필드를 추가.
 
 ```HTML
@@ -576,12 +576,107 @@ _ _ _
     });
   }
 ```
+_ _ _
+## 메모 삭제하기 (index.ejs)
+- html (ejs)
+```HTML
+<input type="text" id="targetId">
+<button id="removeBtn" class="btn btn-primary">remove</button>
+```
+_ _ _
+## 메모 삭제하기 (js)
+- via socket.io
+
+```javascript
+$(document).ready(function() { 
+...
+io.socket.get('/Memo');  // subscribe.
+
+  // publishDestroy
+  $("#removeBtn").click(function(e) {
+    io.socket.delete('/Memo', {
+        id: parseInt($('#targetId').val()),
+      }, function (response) {
+        console.log('removed');
+    });
+  });
+
+  io.socket.on('memo',function(obj){
+    if (obj.verb == 'destroyed') {
+      $("#li_"+obj.id).append('<strong> was removed!</strong>');
+        console.log(obj.id + ' was removed.');
+    }
+  });
+```
+_ _ _
+## 메모 삭제하기 (Controller)
+- destroy override
+
+```javascript
+  find: function (req, res) {
+  ...
+      Memo.subscribe(req.socket, memos);
+
+      if (req.isSocket) {
+        return res.json({memos:memos});
+      }
+  ...
+
+  destroy: function (req, res) {
+    var id = req.param('id');
+
+    Memo.destroy({'id':id}).exec(function destroy(err){
+      Memo.publishDestroy( id );
+    });
+
+    return res.json({targetId: id});
+  }
+```
+- - -
+## etc
+- - -
+## sails 그외
+- CORS (Cross-Origin Resource Sharing) 
+- Policies
+- File Uploads
+- Internationalization
+- Security (CSRF...)
+
+- - -
+## sails 를 heroku 에..
+- git repository 초기화 & 커밋.
+```SHELL
+$ git init .
+$ git add .
+$ git commit -m 'simple-app'
+... ...
+$ heroku apps:create rkjun-test-sails
+$ git push heroku master
+```
+- - -
+## sails 를 heroku 에..
+```SHELL
+$ heroku ps:scale web=1
+$ heroku ps
+=== web (1X): `npm start`
+web.1: up 2014/07/28 16:33:41 (~ 18s ago)
+```
+
+- Procfile 생성하기 (heroku push까지..)
+
+```SHELL
+$ echo web: sails lift --prod >> Procfile
+$ git add . && git commit -m "heroku procfile"
+$ git push heroku master
+... heroku deploy...
+```
 - - - 
 ## Data Storage 변경
-- default - localDiskDb (sails-disk)
+- default - localDiskDb (sails-disk) .tmp/localDiskDb.db
 - sails-mongo 설치하기
 ```SHELL
-$ npm install sails-mongo --save
+$ npm install sails-mongo --save (for sails 0.9.x)
+$ npm install sails-mongo@0.10.x --save
 ```
 - sails v0.10.0
    - config/connections.js
@@ -589,17 +684,49 @@ $ npm install sails-mongo --save
 - sails v0.9.x
    - config/adapters.js
 _ _ _
+## heroku addon 추가 
+- credit card 필요.
+- heroku addon add mongoHQ
+```SHELL
+$ heroku addons:add mongohq
+...
+$ heroku config | grep MONGOHQ_URL
+MONGOHQ_URL : mongodb://heroku:...
+```
+_ _ _
+## db 정보 추가
+- config/connections.js
 
+```javascript
+  mongoHQ: {
+    adapter: 'sails-mongo',
+    // host: 'localhost',
+    // port: 27017,
+    // user: 'username',
+    // password: 'password',
+    // database: 'your_mongo_db_name_here'
+    url: process.env.MONGOHQ_URL
+  },
+```
+- config/models.js
+
+```javascript
+  connection: 'mongoHQ'
+```
+- - -
 ## 결론
-- 부숴도 좋은 장난감 만들기
-- git 배우기
-- ruby on rails, coffee script
-
+- heroku 무료 
+   - 원하지 않게, 실수로 유료서비스 사용하지 않게 주의
+- sails - 지금도 개발중.
+   - 어느 정도 안정화
+   - 버전별 차이는 있음
+      - 마이그레이션이 필요함.
+- sails 를 보니 ruby on rails 에 흥미가 생김.
 - - -
 ## 참고
 * [Heroku Dev Center](https://devcenter.heroku.com/)
 * [Sailsjs](http://sailsjs.org/)
 - - -
-## 고맙습니다
-Thank you.
-
+## 끝
+<small>- 30시간의 삽질을 30분에....</small>   
+<small>- github [@rkjun](http://github.com/rkjun), twitter [@rkjun](http://twitter.com/rkjun)</small>   
