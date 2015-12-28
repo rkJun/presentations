@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://fb.me/react-0.14.3.js"></script>
+    <script src="https://fb.me/react-dom-0.14.3.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+  </head>
+  <body>
+
+    <div id="example">
+    </div>
+    <script type="text/babel">
+    var Timer = React.createClass({
+      getInitialState: function() {
+        return {secondsElapsed: 0};
+      },
+      tick: function() {
+        this.setState({secondsElapsed: this.state.secondsElapsed + 1});
+      },
+      componentDidMount: function() {
+        this.interval = setInterval(this.tick, 1000);
+      },
+      componentWillUnmount: function() {
+        clearInterval(this.interval);
+      },
+      handleClick: function() {
+        this.setState({secondsElapsed: this.state.secondsElapsed + 1000});
+      },
+      render: function() {
+        return (
+          <div onClick={this.handleClick}>Seconds Elapsed: {this.state.secondsElapsed}</div>
+        );
+      }
+    });
+
+    ReactDOM.render(<Timer />, document.getElementById('example'));
+    </script>
+
+
+  </body>
+</html>

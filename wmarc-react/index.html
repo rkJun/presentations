@@ -1,0 +1,506 @@
+  <!DOCTYPE html>
+<html>
+  <head>
+    <title>React slide - Juntai Park</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      @import url(http://fonts.googleapis.com/earlyaccess/jejugothic.css);
+      @import url(http://fonts.googleapis.com/earlyaccess/hanna.css);
+      @import url(http://fonts.googleapis.com/earlyaccess/jejuhallasan.css);
+      @import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+
+      @import url(https://cdn.jsdelivr.net/font-nanum/1.0/nanumbarungothic/nanumbarungothic.css);
+
+
+      body { font-family: 'Nanum Barun Gothic'; }
+      h1, h2, h3 {
+        font-family: 'Nanum Barun Gothic'; 
+        font-weight: normal;
+      }
+      .remark-slide-content h1 { font-size: 3em; }
+       .remark-slide-content h2 { font-size: 2em; }
+       .remark-slide-content h3 { font-size: 1.6em; }
+       .footnote {
+         position: absolute;
+         bottom: 3em;
+       }
+       li p { line-height: 1.25em; }
+       .red { color: #fa0000; }
+       .large { font-size: 2em; }
+       a, a > code {
+         color: rgb(249, 38, 114);
+         text-decoration: none;
+       }
+       code {
+         background: #e7e8e2;
+         border-radius: 5px;
+       }
+       .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+       .eng { font-family: 'Droid Serif';}
+       .remark-code-line-highlighted     { background-color: #373832; }
+       .pull-left {
+         float: left;
+         width: 47%;
+       }
+       .pull-right {
+         float: right;
+         width: 47%;
+       }
+       .pull-right ~ p {
+         clear: both;
+       }
+       #slideshow .slide .content code {
+         font-size: 0.8em;
+       }
+       #slideshow .slide .content pre code {
+         font-size: 0.9em;
+         padding: 15px;
+       }
+       .inverse {
+         background: #272822;
+         color: #777872;
+         text-shadow: 0 0 20px #333;
+       }
+       .inverse h1, .inverse h2 {
+         color: #f3f3f3;
+         line-height: 0.8em;
+       }
+
+       /* Slide-specific styling */
+       #slide-inverse .footnote {
+         bottom: 12px;
+         left: 20px;
+       }
+       #slide-how .slides {
+         font-size: 0.9em;
+         position: absolute;
+         top:  151px;
+         right: 140px;
+       }
+       #slide-how .slides h3 {
+         margin-top: 0.2em;
+       }
+       #slide-how .slides .first, #slide-how .slides .second {
+         padding: 1px 20px;
+         height: 90px;
+         width: 120px;
+         -moz-box-shadow: 0 0 10px #777;
+         -webkit-box-shadow: 0 0 10px #777;
+         box-shadow: 0 0 10px #777;
+       }
+       #slide-how .slides .first {
+         background: #fff;
+         position: absolute;
+         top: 20%;
+         left: 20%;
+         z-index: 1;
+       }
+       #slide-how .slides .second {
+         position: relative;
+         background: #fff;
+         z-index: 0;
+       }
+
+       /* Two-column layout */
+       .left-column {
+         color: #777;
+         width: 20%;
+         height: 92%;
+         float: left;
+       }
+         .left-column h2:last-of-type, .left-column h3:last-child {
+           color: #000;
+         }
+       .right-column {
+         width: 75%;
+         float: right;
+         padding-top: 1em;
+       }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+layout: true
+class: center, middle, inverse
+---
+.eng[# React]
+<img src="https://facebook.github.io/react/img/logo.svg" width="20%">
+
+2015.12.28, W-MARC 사내 세미나
+.footnote.eng[by [Juntai Park](https://github.com/rkjun)]
+---
+layout: true
+class: top, left, inverse
+---
+# React 발표배경
+- 요즘 유행중(?), But 사용할 일이 없음
+- 세미나 하는 김에 살펴보기로 함
+
+- 일단 쉽게 찾을 수 있는 정보 
+  - facebook 에서 만들고, 
+
+  - facebook 에서 쓰고 있다.
+  - www.facebook.com 콘솔에서,
+```js
+require('React').version
+> "0.15.0-alpha"
+```
+  - beta 도 아니고 alpha 버전을 production 에서 쓰고 있음. ㅎㄷ;
+---
+class: top, left
+# react 사전적 의미
+- [ri|ӕkt] 리액트
+1. 반응하다, 반응을 보이다
+2. (특정 물질에 대해 신체적으로 좋지 않은) 반응을 보이다
+3. 화학 반응을 일으키다
+
+.footnote[출처 : [NAVER 어학사전](http://endic.naver.com/enkrEntry.nhn?sLn=kr&entryId=29a0927d93fa4f71b3873a3339ab8725)]
+---
+# React ?
+
+- A Javascript Library For Building User Interfaces  
+  (UI를 만들기 위한, 자바스크립트 라이브러리)
+
+- Not framework
+
+- 2013년 5월 첫 공개 (v0.3.0)
+
+- 2015년 11월 19일 기준 (v0.14.3)
+
+- 2015년 12월 현재 facebook.com 에서는 `0.15.0-alpha` 사용중
+
+- 2015년 12월 현재 Github 33,659 star / 5,395 fork  
+    - jQuery 37,309 / 9,728
+    - angular 7,707 / 2,009
+    - spring-framework 7,380 / 6,290
+
+.footnote[출처 : [React 공식 홈페이지](https://facebook.github.io/react/index.html)]
+---
+# 왜 React 인가?
+
+- 페이스북과 인스타그램에서 사용자 인터페이스를 구성하기 위해 만들어진 라이브러리
+
+- **지속해서 데이터가 변화하는 대규모 애플리케이션을 구축하기** 를 위해 만들어짐.
+  - 단순함
+     - 데이터가 변할 때, UI를 업데이트해 줌
+
+  - 선언적 문법 (Declarative)  
+
+     - 데이터가 변할 때, 새로고침 버튼을 누른 듯 작동
+     - 데이터의 바뀐 부분만 업데이트
+
+  - 컴포넌트의 재사용
+     - React 를 사용하면, 단지 컴포넌트를 만드는 일만 함.
+     - 관심 분리의 원칙(separation of concerns) 을 지키게 해 줌.
+
+.footnote[출처 : [React Guide - Why React? 한국어번역](http://facebook.github.io/react/docs/why-react-ko-KR.html)]
+
+---
+# React 3가지 특징
+
+- JUST THE UI  
+   - MVC 중 V (View) 용도로 사용
+
+- VIRTUAL DOM
+   - 내부적으로 가상의 DOM을 만들어 관리하고 최종적으로 화면에 렌더링 될때만 실제 DOM을 사용
+   - Node 를 사용하여 서버렌더링 가능, React Native 를 통해 native apps 에도 사용 가능
+
+- DATA FLOW
+   - One way(단방향) 데이터 흐름
+
+.footnote[출처 : [React 공식 홈페이지(https://facebook.github.io/react/index.html)]]
+---
+layout: true
+class: center, middle, inverse
+---
+# 일단 써 보자!
+백문이 불여일~~견~~**타**(百聞不如一~~見~~**打**)
+---
+layout: true
+class: top, left, inverse
+---
+# 설치하기
+- CDN 사용
+```js
+<!-- The core React library -->
+<script src="https://fb.me/react-0.14.3.js"></script>
+<!-- The ReactDOM Library -->
+<script src="https://fb.me/react-dom-0.14.3.js"></script>
+```
+- Starter kit 다운로드
+   - 파일 [다운로드](https://github.com/facebook/react/releases) 받아 사용
+
+- bower 사용시
+```shell
+bower install --save react
+```
+
+- npm 사용시
+```shell
+npm install --save react react-dom babelify babel-preset-react
+```
+---
+# Simple Component
+```js
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://fb.me/react-0.14.3.js"></script>
+    <script src="https://fb.me/react-dom-0.14.3.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+  </head>
+  <body>
+
+    <div id="example">
+    </div>
+    <script type="text/babel">
+      var HelloMessage = React.createClass({
+        render: function() {
+          return <div>Hello {this.props.name}</div>;
+        }
+      });
+
+      ReactDOM.render(<HelloMessage name="John" />, document.getElementById('example'));
+    </script>
+
+  </body>
+</html>
+```
+https://jsfiddle.net/reactjs/69z2wepo/
+
+---
+# JSX
+- React를 사용하기 위해서 JSX 이 필수는 아님
+- JSX 단어는 Javascript와 XML을 합침으로써 탄생
+- 기존 XML을 허용하기 위한 Javascript의 확장 문법
+- Javascript 내부에 마크업 코드를 직접 작성
+- JSX는 단순히 XML을 허용만 하는게 아니라, 
+- Javascript의 변수나 프로퍼티의 값의 바인딩에 대한 추가적인 기능도 제공
+
+```js
+//jsx가 없을 때
+React.createElement('a', {href: 'https://facebook.github.io/react/'}, '안녕하세요!')
+//jsx를 사용했을 때:
+<a href="https://facebook.github.io/react/">안녕하세요!</a>
+```
+.footnote[참조 http://webframeworks.kr/getstarted/reactjs/]
+---
+# JSX to JavaScript
+
+```js
+<script type="text/babel">
+  var HelloMessage = React.createClass({
+    render: function() {
+      return <div>Hello {this.props.name}</div>;
+    }
+  });
+
+  ReactDOM.render(<HelloMessage name="John" />, document.getElementById('example'));
+</script>
+```
+
+```js
+"use strict";
+
+var HelloMessage = React.createClass({
+  displayName: "HelloMessage",
+
+  render: function render() {
+    return React.createElement(
+      "div",
+      null,
+      "Hello ",
+      this.props.name
+    );
+  }
+});
+
+ReactDOM.render(React.createElement(HelloMessage, { name: "John" }), 
+document.getElementById("example"));
+```
+---
+# script type
+
+- script의 type은 `"text/babel"` (구 버전에서는 text/jsx)
+
+```html
+<script type="text/babel">
+// code
+</script>
+```
+
+- `"text/babel"` 영역을 babel이 해석해 줌.
+- babel 브라우저 번역기 
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+```
+---
+# 잡설
+## Babel, ECMAScript 2015
+- ES2015 = ECMAScript 6(ES6)
+- ES2016 = ECMAScript 7(ES7)
+
+## Babel ? 
+- 6 to 5 
+- ES6 -> ES5 바꿔주는 도구로 시작.
+
+## 참조 링크
+- [ES2015와 React](http://webframeworks.kr/tutorials/react/es2015-react/)
+- [Babel로 ECMAScript 2015 사용하기](http://blog.outsider.ne.kr/1176)
+- [ECMAScript compatibility table](https://kangax.github.io/compat-table/es6/)
+
+---
+# React.createClass
+
+## HelloMessage 컴포넌트 생성
+- 클래스명은 대문자 시작
+```js
+var HelloMessage = React.createClass({
+});
+```
+- React.createClass() render 메소드를 가진 리터럴 객체 JSX 로 작성하여 리턴
+```js
+    render: function() {
+      return <div>Hello {this.props.name}</div>;
+    }
+```
+
+---
+# ReactDOM.Render
+- 작성한 컴포넌트 HelloMessage 클래스를 화면의 element id=example 에 표시함
+```js
+ReactDOM.render(<HelloMessage name="John" />, document.getElementById('example'));
+```
+---
+# prop
+- this.props
+- 사용시점에 정의되며, 읽기전용
+```js
+  var HelloMessage = React.createClass({
+    render: function() {
+      return <div>Hello {this.props.name}</div>;
+    }
+  });
+```
+
+- name 프로퍼티 설정
+```js
+  ReactDOM.render(<HelloMessage name="John" />, document.getElementById('example'));
+```
+---
+# Stateful Component
+
+```js
+var Timer = React.createClass({
+  getInitialState: function() {
+    return {secondsElapsed: 0};
+  },
+  tick: function() {
+    this.setState({secondsElapsed: this.state.secondsElapsed + 1});
+  },
+  componentDidMount: function() {
+    this.interval = setInterval(this.tick, 1000);
+  },
+  componentWillUnmount: function() {
+    clearInterval(this.interval);
+  },
+  render: function() {
+    return (
+      <div>Seconds Elapsed: {this.state.secondsElapsed}</div>
+    );
+  }
+});
+
+ReactDOM.render(<Timer />, document.getElementById('example'));
+```
+---
+# getInitialState
+
+- state 초기값 설정
+- `secondsElapsed: 0`
+
+```js
+getInitialState: function() {
+  return {secondsElapsed: 0};
+},
+```
+
+# componentDidMount
+```js
+this.interval = setInterval(this.tick, 1000);
+```
+
+# this.setState
+```js
+tick: function() {
+  this.setState({secondsElapsed: this.state.secondsElapsed + 1});
+}
+```
+---
+# this.setState
+
+```js
+handleClick: function() {
+  this.setState({secondsElapsed: this.state.secondsElapsed + 1000});
+},
+render: function() {
+  return (
+    <div onClick={this.handleClick}>Seconds Elapsed: {this.state.secondsElapsed}</div>
+  );
+```
+---
+# Life Cycle
+
+- `componentWillMount` : DOM에 붙을 예정
+- `componentDidMount` : DOM에 붙었음
+- `componentWillReceiveProps` : 프로퍼티 받을 것임
+- `shouldComponentUpdate` : 업데이트 해야하나?
+- `componentWillUpdate` : 컴포넌트 업데이트 예정
+- `componentDidUpdate` : 컴포넌트 업데이트
+- `componentWillUnmount` : DOM에서 떨어질 예정
+
+.footnote[http://www.slideshare.net/deview/141-react-everywhere]
+---
+# Server Side Rendering 
+
+## Java - JSR223
+
+- Java 8
+   - Nashorn (JavaScript Engine) [link](http://www.oracle.com/technetwork/articles/java/jf14-nashorn-2126515.html)
+
+- Java 6, 7
+   - Rhino
+---
+# 참조
+- https://facebook.github.io/react/
+- http://facebook.github.io/react/docs/getting-started.html
+- http://reactkr.github.io/react/docs/getting-started-ko-KR.html
+- http://www.slideshare.net/deview/141-react-everywhere
+- http://webframeworks.kr/tutorials/react/getting-started/
+- http://www.slideshare.net/deview/141-react-everywhere/
+- http://blog.remotty.com/blog/2015/08/30/react-server-rendering-on-rails/
+---
+class: center, middle
+
+좀 더 관심이 가면
+
+- [React Docs](https://facebook.github.io/react/docs/getting-started.html) (영어압박주의)   
+- [React Docs Korean](http://reactkr.github.io/react/docs/getting-started-ko-KR.html) (버전주의)
+- [awesome-react](https://github.com/enaqx/awesome-react) (영어압박주의)
+
+감사합니다.
+ 
+
+    </textarea>
+    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
+```
